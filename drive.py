@@ -61,11 +61,21 @@ def telemetry(sid, data):
         # The current image from the center camera of the car
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
-        image_array = np.asarray(image)
+        img = np.asarray(image)
         # Trim image HWC ordered image (preprocessing must be identical as in training)
-        image_array = image_array[50:130]
-        image_array = cv2.resize(image_array,(160,40),interpolation=cv2.INTER_AREA)
-        steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
+        if False:
+            far = img[50:90].astype(np.float32)
+            near = img[90:130].astype(np.float32)
+            # image preprocessing: resize, colorspace conversion
+            far = cv2.resize(far,(80,10),interpolation=cv2.INTER_AREA)
+            far = cv2.cvtColor(far/255.0, cv2.COLOR_RGB2HSV)
+            near = cv2.resize(near,(160,20),interpolation=cv2.INTER_AREA)
+            near = cv2.cvtColor(near/255.0, cv2.COLOR_RGB2HSV)
+            steering_angle = float(model.predict([near[None, :, :, :],far[None, :, :, :]], batch_size=1))
+        else:
+            img = img[70:135].astype(np.float32)
+            #image = cv2.cvtColor(image/255.0, cv2.COLOR_RGB2HSV)
+            steering_angle = float(model.predict(img[None, :, :, :], batch_size=1))
 
         throttle = controller.update(float(speed))
 

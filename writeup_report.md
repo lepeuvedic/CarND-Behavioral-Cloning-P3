@@ -38,20 +38,20 @@ Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/4
 
 ---
 
-###Files Submitted & Code Quality
+### Files Submitted & Code Quality
 
-####1. Submission includes all required files and can be used to run the simulator in autonomous mode
+#### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
-* model.py containing the script to create and train the model
-* drive.py for driving the car in autonomous mode
-* model.h5 containing a trained convolution neural network 
-* writeup_report.md summarizing the results
-* env.sh sets up the environment for correct execution of the model
+* `model.py` containing the script to create and train the model
+* `drive.py` for driving the car in autonomous mode
+* `model.h5` containing a trained convolution neural network 
+* `writeup_report.md` summarizing the results
+* `env.sh` sets up the environment to use Keras with Theano (required for the correct execution of the model)
 
 model.py and model.h5 are entirely original code. drive.py includes some modifications which match the image preprocessing done for training. 
 
-####2. Submission includes functional code
+#### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
 ```sh
 source env.sh
@@ -71,14 +71,14 @@ https://github.com/fchollet/keras/wiki/Converting-convolution-kernels-from-Thean
 The Theano backend will run with CUDA on NVidia hardware, but in order to run the model for predictions (no training), the CPU should be
 enough.
 
-####3. Submission code is usable and readable
+#### 3. Submission code is usable and readable
 
 The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for
 training and validating the model, and it contains comments to explain how the code works.
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. An appropriate model architecture has been employed
+#### 1. An appropriate model architecture has been employed
 
 My model is an adaptation of the NVidia autonomous car architecture. It is identical to the architecture which appears in the course
 video. The goal was to reach the required level of performance as quickly as possible, with minimum risk, due to significant changes in
@@ -91,7 +91,7 @@ After the convolutional layers, the tensor is flattened and dense layers with 10
 
 The model includes RELU layers to introduce nonlinearity (code lines 191, 193, 195, 197, 199), and the data is normalized in the model using a Keras lambda layer (code line 189). 
 
-####2. Attempts to reduce overfitting in the model
+#### 2. Attempts to reduce overfitting in the model
 
 The largest number of times certain image subsets have been used for training is 60. Each simulator run generated its own driving log
 file, and the files had to be concatenated (cat driving_log*.csv > driving_log.csv) before the training. Due to errors in handling those
@@ -110,7 +110,7 @@ the model to generalize well and avoid overfitting.
 
 The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
-####3. Model parameter tuning
+#### 3. Model parameter tuning
 
 The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 213).
 The batch size was mostly set for overall performance, since the computer had to handle simultaneously a large amount of I/O, CPU
@@ -119,7 +119,7 @@ basedpre-processing and GPU-based training. The final compromise is 192.
 It is important to note that images are flipped in memory by the generator, so each batch is balanced in terms of curves to the left or
 to the right. 
 
-####4. Appropriate training data
+#### 4. Appropriate training data
 
 Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left
 and right sides of the road with various types of pavement and side lines, and I also used the left and right camera images. 
@@ -137,56 +137,102 @@ of the pavement, or to drive away from the track;
 
 For details about how I created the training data, see the next section. 
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. Solution Design Approach
+#### 1. Solution Design Approach
 
-The overall strategy for deriving a model architecture was to ...
+The overall strategy for deriving a model architecture was to copy the model of the instructional video. I know that it's a cheap
+strategy, but the result was guaranteed from multiple sources. Further tests have been made, espacially with an inception model which
+mixes various smaller, preprocessed versions of the images, but the results are not yet available.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+My first step was to use a convolution neural network model similar to the NVidia architecture. I thought this model might be
+appropriate because it is the right tool for a machine vision application. I made a few test with HSV colorspace conversion, which
+provides a grayscale channel and a hue channel where, I hoped, the gray pavement would be easily recognizable. The approach was not more
+successful than using RGB.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set (model.py
+line 134). The first attempts at training were tests with 5 to 9 epochs and somewhat larger dataset. Overfitting was clearly not present
+at that stage.  
 
-To combat the overfitting, I modified the model so that ...
+In the final steps I was training with a significant proportion (17%) of track 2 images in both sets, and the model was not overfitting.
+I imagined various strategies should overfitting occur:
 
-Then I ... 
+* Adding Dropout layers after the convolutional layers and after the first two Dense layers;
+* Adding more track 2 images;
+* Using the Keras image augmentation function to rotate the pictures slightly.
 
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+The addition of Dropout layers did not change the behaviour, but did not seem to provide any advantage, so I eliminated the Dropout
+layers from the final model.
 
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle
+fell off the track. To improve the driving behavior in these cases, I deleted the corresponding examples of driving off-track from the samples, and added recovery trajectories from the side of the track recorded in the same sensitive areas.
 
-####2. Final Model Architecture
+At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road. Two complete laps are recorded in the file `video.mpg`.
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+#### 2. Final Model Architecture
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
+The final model architecture (model.py lines 187-212) consisted of a convolution neural network with the following layers and layer sizes :
+
+* Image normalization;
+* Convolution layer, valid padding, 5x5 kernel, stride 2, 24 layers;
+* Convolution layer, valid padding, 5x5 kernel, stride 2, 36 layers;
+* Convolution layer, valid padding, 5x5 kernel, stride 2, 48 layers;
+* Convolution layer, valid padding, 3x3 kernel, stride 1, 64 layers;
+* Convolution layer, valid padding, 3x3 kernel, stride 1, 64 layers, at which point the map is 1 pixel high;
+* Flatten; 
+* Dense layer 100 neurons;
+* Dense layer 50 neurons;
+* Dense layer 10 neurons;
+* Output 1 neuron, which controls steering;
+
+Here is a visualization of the architecture obtained using Keras visualisation utility:
 
 ![alt text][image1]
 
-####3. Creation of the Training Set & Training Process
+#### 3. Creation of the Training Set & Training Process
 
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
+To capture good driving behavior, I first recorded three laps in each driving direction on track one using center lane driving. Here is
+an example image of center lane driving:
+
+![alt text][image6]
+
+I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to
+recover from excursions to the sides of the track. These images show what a recovery looks like starting from the edge of the pavement :
 
 ![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
 ![alt text][image3]
 ![alt text][image4]
 ![alt text][image5]
 
-Then I repeated this process on track two in order to get more data points.
+The following animated GIF should give a better understanding of the recovery trajectory:
 
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
+![alt text][image8]
+
+Then I added images recorded on track two, driving in the middle line, in order to get very different data points which would help to fence off overfitting.
+
+To augment the data sat, I also flipped images and angles thinking that this would help balance right over steering and left over steering tendencies. For example, here is an image that has then been flipped:
 
 ![alt text][image6]
 ![alt text][image7]
 
-Etc ....
+Because I had a relatively limited amount of images, I decided to use the left and right cameras. The side cameras provide an off-center view of the track. All three cameras are perfectly aligned. The method published by NVidia to use that data, is to associated to the side images a steering angle value derived from the recorded steering angle, as if it was an image from the center camera. In other terms, the recorded steering angle corresponds to the center camera, and derived steering angles must be computed for the side cameras.
+
+All the dimensions in the landscape can be normalized by the scale of the car, and the most natural measure of that is the distance between the rear axle and the plane of the cameras. The Z direction is forward, in the general direction of the camera view port depth. The X direction is to the right side of the car, and the Y direction is vertical, upwards. 
+
+I examined the unity source code of the simulator to get the exact geometric dimensions:
+
+* The distance e between the rear axle and the cameras is 2.61 meters;
+* The distance \Delta x between the car centerline and the right camera is 0.825 meters;
+* The distance \Delta x between the car centerline and the left camera is 0.806 meters.
+
+If the view from the center camera is the middle of the track, the right camera shows the right side of the track. Therefore a negative offset to the steering angle is needed to get that view closer to the center of the track. 
+
+Due to the turn radius becoming infinite, two different calculation methods are needed to derive a steering angle offset when the recorded steering angle is small (close to zero) or large. An important parameter is the distance ahead of the car at which the recovery should be achieved. It is obvious that this distance will very with speed, and is better expressed as the product of some speed V with a time delay t. Because I was driving at the maximum speed, 30 mph during the most of the training sessions on the simulator, I finally used a fixed offset for each side camera. I thought that two seconds to recover seemed appropriate, and therefore the distance covered in two seconds at 30 mph is the standard recovery distance. In distances normalized by e, the formula is `\Delta \beta = - 2 X / Z²`.
+
 
 After the collection process, I had X number of data points. I then preprocessed this data by ...
 
 
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
+I finally randomly shuffled the data set and put 20% of the data into a validation set. 
 
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.

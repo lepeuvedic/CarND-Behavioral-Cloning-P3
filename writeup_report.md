@@ -17,7 +17,8 @@ The goals / steps of this project are the following:
 * Test that the model successfully drives around track one without leaving the road
 * Summarize the results with a written report
 
-This is a first complete version of the project, which meets the minimum review criteria. Further experimentation with different network architectures are ongoing, and will be included in a final version.
+This is a first complete version of the project, which meets the minimum review criteria. Further experimentation with different network
+architectures are ongoing, and will be included in a final version.
 
 [//]: # (Image References)
 
@@ -32,9 +33,11 @@ This is a first complete version of the project, which meets the minimum review 
 [image9]: ./examples/left_2017_09_13_03_17_55_369.jpg "Left camera"
 [image10]: ./examples/center_2017_09_13_03_17_55_369.jpg "Center camera"
 [image11]: ./examples/right_2017_09_13_03_17_55_369.jpg "Right camera"
+[image12]: ./examples/recovery_angle.png "Recovery angle"
 
 ## Rubric Points
-Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.  
+Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each
+point in my implementation.  
 
 ---
 
@@ -49,7 +52,8 @@ My project includes the following files:
 * `writeup_report.md` summarizing the results
 * `env.sh` sets up the environment to use Keras with Theano (required for the correct execution of the model)
 
-model.py and model.h5 are entirely original code. drive.py includes some modifications which match the image preprocessing done for training. 
+model.py and model.h5 are entirely original code. drive.py includes some modifications which match the image preprocessing done for
+training. 
 
 #### 2. Submission includes functional code
 Using the Udacity provided simulator and my drive.py file, the car can be driven autonomously around the track by executing 
@@ -87,9 +91,11 @@ caused by a non-functional software/hardware stack. So I got sure that I used a 
 examples.
 
 My model consists of a convolution neural network with 5x5 and 3x3 filter sizes and depths between 24 and 64 (model.py lines 187-212). 
-After the convolutional layers, the tensor is flattened and dense layers with 100, 50, 10 and finally 1 perceptrons compute the steering angle.
+After the convolutional layers, the tensor is flattened and dense layers with 100, 50, 10 and finally 1 perceptrons compute the steering
+angle.
 
-The model includes RELU layers to introduce nonlinearity (code lines 191, 193, 195, 197, 199), and the data is normalized in the model using a Keras lambda layer (code line 189). 
+The model includes RELU layers to introduce nonlinearity (code lines 191, 193, 195, 197, 199), and the data is normalized in the model
+using a Keras lambda layer (code line 189). 
 
 #### 2. Attempts to reduce overfitting in the model
 
@@ -130,7 +136,8 @@ manually deleted because they exhibited poor driving behaviour.
 * The first subset includes three laps in either direction (the half-turn
 manoeuver in one of the earth pockets of the track had to be deleted). Every time I drove off center and too close to a side of the
 pavement, a few images of the divergence instants have been manually deleted and the recovery was left;
-* The second subset includes 911 track locations (and a number of images equal to three times that amount) : mostly recoveries in specific areas of the track, where the car tended to drive over the edges
+* The second subset includes 911 track locations (and a number of images equal to three times that amount) : mostly recoveries in
+specific areas of the track, where the car tended to drive over the edges
 of the pavement, or to drive away from the track;
 * The third subset includes 1364 track locations on track 2, and it is essential to avoid overfitting;
 * Finally the last subset contains 574 track locations, mostly recoveries in areas the car had difficulties to cross.
@@ -165,13 +172,16 @@ The addition of Dropout layers did not change the behaviour, but did not seem to
 layers from the final model.
 
 The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle
-fell off the track. To improve the driving behavior in these cases, I deleted the corresponding examples of driving off-track from the samples, and added recovery trajectories from the side of the track recorded in the same sensitive areas.
+fell off the track. To improve the driving behavior in these cases, I deleted the corresponding examples of driving off-track from the
+samples, and added recovery trajectories from the side of the track recorded in the same sensitive areas.
 
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road. Two complete laps are recorded in the file `video.mpg`.
+At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road. Two complete laps are
+recorded in the file `video.mpg`.
 
 #### 2. Final Model Architecture
 
-The final model architecture (model.py lines 187-212) consisted of a convolution neural network with the following layers and layer sizes :
+The final model architecture (model.py lines 187-212) consisted of a convolution neural network with the following layers and layer
+sizes :
 
 * Image normalization;
 * Convolution layer, valid padding, 5x5 kernel, stride 2, 24 layers;
@@ -194,30 +204,41 @@ Here is a visualization of the architecture obtained using Keras visualisation u
 To capture good driving behavior, I first recorded three laps in each driving direction on track one using center lane driving. Here is
 an example image of center lane driving:
 
-![alt text][image6]
+![Exemple image recorded from the center camera][image6]
 
 I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to
 recover from excursions to the sides of the track. These images show what a recovery looks like starting from the edge of the pavement :
 
-![alt text][image2]
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
+![Still image from recovery sequence : start][image2]
+![Still image from recovery sequence : next][image3]
+![Still image from recovery sequence : next][image4]
+![Still image from recovery sequence : recovered to center of the track][image5]
 
 The following animated GIF should give a better understanding of the recovery trajectory:
 
-![alt text][image8]
+![Animated GIF of a typical recovery sequence][image8]
+![evolution of steering angle during recovery trajectory][image12]
 
-Then I added images recorded on track two, driving in the middle line, in order to get very different data points which would help to fence off overfitting.
+The image on the right shows the evolution of the steering angle during a recovery trajectory: it starts with a relatively high value
+and is smoothly reduced to the correct value for the long term curve of the track.
 
-To augment the data sat, I also flipped images and angles thinking that this would help balance right over steering and left over steering tendencies. For example, here is an image that has then been flipped:
+Then I added images recorded on track two, driving in the middle line, in order to get very different data points which would help to
+fence off overfitting.
 
-![alt text][image6]
-![alt text][image7]
+To augment the data sat, I also flipped images and angles thinking that this would help balance right over steering and left over
+steering tendencies. For example, here is an image that has then been flipped:
 
-Because I had a relatively limited amount of images, I decided to use the left and right cameras. The side cameras provide an off-center view of the track. All three cameras are perfectly aligned. The method published by NVidia to use that data, is to associated to the side images a steering angle value derived from the recorded steering angle, as if it was an image from the center camera. In other terms, the recorded steering angle corresponds to the center camera, and derived steering angles must be computed for the side cameras.
+![Normal image][image6]
+![Flipped image][image7]
 
-All the dimensions in the landscape can be normalized by the scale of the car, and the most natural measure of that is the distance between the rear axle and the plane of the cameras. The Z direction is forward, in the general direction of the camera view port depth. The X direction is to the right side of the car, and the Y direction is vertical, upwards. 
+Because I had a relatively limited amount of images, I decided to use the left and right cameras. The side cameras provide an off-center
+view of the track. All three cameras are perfectly aligned. The method published by NVidia to use that data, is to associated to the
+side images a steering angle value derived from the recorded steering angle, as if it was an image from the center camera. In other
+terms, the recorded steering angle corresponds to the center camera, and derived steering angles must be computed for the side cameras.
+
+All the dimensions in the landscape can be normalized by the scale of the car, and the most natural measure of that is the distance
+between the rear axle and the plane of the cameras. The Z direction is forward, in the general direction of the camera view port depth.
+The X direction is to the right side of the car, and the Y direction is vertical, upwards. 
 
 I examined the unity source code of the simulator to get the exact geometric dimensions:
 
@@ -225,14 +246,30 @@ I examined the unity source code of the simulator to get the exact geometric dim
 * The distance \Delta x between the car centerline and the right camera is 0.825 meters;
 * The distance \Delta x between the car centerline and the left camera is 0.806 meters.
 
-If the view from the center camera is the middle of the track, the right camera shows the right side of the track. Therefore a negative offset to the steering angle is needed to get that view closer to the center of the track. 
+If the view from the center camera is the middle of the track, the right camera shows the right side of the track. Therefore a negative
+offset to the steering angle is needed to get that view closer to the center of the track. 
 
-Due to the turn radius becoming infinite, two different calculation methods are needed to derive a steering angle offset when the recorded steering angle is small (close to zero) or large. An important parameter is the distance ahead of the car at which the recovery should be achieved. It is obvious that this distance will very with speed, and is better expressed as the product of some speed V with a time delay t. Because I was driving at the maximum speed, 30 mph during the most of the training sessions on the simulator, I finally used a fixed offset for each side camera. I thought that two seconds to recover seemed appropriate, and therefore the distance covered in two seconds at 30 mph is the standard recovery distance. In distances normalized by e, the formula is `\Delta \beta = - 2 X / Z²`.
+Due to the turn radius becoming infinite, two different calculation methods are needed to derive a steering angle offset when the
+recorded steering angle is small (close to zero) or large. An important parameter is the distance ahead of the car at which the recovery
+should be achieved. It is obvious that this distance will very with speed, and is better expressed as the product of some speed V with a
+time delay t. Because I was driving at the maximum speed, 30 mph during the most of the training sessions on the simulator, I finally
+used a fixed offset for each side camera. I thought that two seconds to recover seemed appropriate, and therefore the distance covered
+in two seconds at 30 mph is the standard recovery distance. In distances normalized by e, the formula is - 2 Xe² / V²t² .
 
+V/e X=x/e are the normalized speed and camera offset.
 
-After the collection process, I had X number of data points. I then preprocessed this data by ...
+After the collection process, I had 8017 data points, with left, center and right images for each. Taking into account horizontally
+flipped images made by the generator, training uses 48102 images and the associated steering angles. Preprocessing is limited to an affine transform of pixel R,G,B values, which projects the 0..255 range onto the -0.5..0.5 range. The normalization is performed by the lambda layer, which is the first in the network.
 
+![Center camera image][image10]
+![Left camera image at the same location][image9]
+![right camera image at the same location][image11]
 
-I finally randomly shuffled the data set and put 20% of the data into a validation set. 
+I finally randomly shuffled the data set and put 20% of the data into a validation set, leaving 35534 data points for training. 
 
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal
+number of epochs was not clearly determined, but rather high, in the order of 60 as evidenced by a plot of traininng and validation
+losses reproduced here. I used an adam optimizer so that manually training the learning rate wasn't necessary.
+
+![Convergence of training and validation loss][image13]
+

@@ -2,7 +2,7 @@
 
 Author: Jean-Marc Le Peuvédic
 
-Date: Sunday, September 17th, 2017
+Date: Sunday, September 17th to 20th, 2017
 
 Version: 1.0
 
@@ -30,10 +30,11 @@ architectures are ongoing, and will be included in a final version.
 [image6]: ./examples/normal.png "Normal Image"
 [image7]: ./examples/flipped.png "Flipped Image"
 [image8]: ./examples/recovery.gif "Recovery animation"
-[image9]: ./examples/left_2017_09_13_03_17_55_369.jpg "Left camera"
+[image9]: ./examples/left_2017_09_13_03_17_55_369.jpg "Left camera from the same location"
 [image10]: ./examples/center_2017_09_13_03_17_55_369.jpg "Center camera"
-[image11]: ./examples/right_2017_09_13_03_17_55_369.jpg "Right camera"
+[image11]: ./examples/right_2017_09_13_03_17_55_369.jpg "Right camera from the same location"
 [image12]: ./examples/recovery_angle.png "Recovery angle"
+[image13]: ./examples/training_convergence.png "Training convergence show no sign of overfitting"
 
 ## Rubric Points
 Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each

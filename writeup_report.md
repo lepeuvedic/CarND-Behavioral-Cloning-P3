@@ -269,7 +269,7 @@ flipped images made by the generator, training uses 48102 images and the associa
 I finally randomly shuffled the data set and put 20% of the data into a validation set, leaving 35534 data points for training. 
 
 I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal
-number of epochs was not clearly determined, but rather high, in the order of 60 as evidenced by a plot of traininng and validation
+number of epochs was not clearly determined, but rather high, in the order of 30 as evidenced by a plot of traininng and validation
 losses reproduced here. I used an adam optimizer so that manually training the learning rate wasn't necessary.
 
 ![Convergence of training and validation loss][image13]
